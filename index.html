@@ -2,207 +2,40 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการข้อมูลหน่วยงาน - Pongston Korat</title>
-    <style>
-        :root {
-            --primary-color: #2e7d32;
-            --danger-color: #d32f2f;
-            --border-color: #bbb;
-        }
-        body { font-family: 'Sarabun', sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        
-        header { text-align: center; margin-bottom: 20px; }
-        h2 { color: var(--primary-color); margin: 0; }
-
-        /* ส่วนฟอร์มเพิ่มข้อมูล - ปรับให้ชิดกันมากที่สุด */
-        .input-section {
-            display: flex;
-            align-items: flex-end;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f1f8e9;
-            border-radius: 8px;
-        }
-        
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
-
-        .input-section input {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-            height: 40px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        /* จัดการความกว้างและมุมโค้งให้ชิดกัน */
-        .cust-input { width: 110px; border-radius: 5px 0 0 5px; }
-        .site-input { width: 100px; border-left: none; border-radius: 0; }
-        .agency-input { flex-grow: 1; border-left: none; border-radius: 0; }
-        
-        .btn-add {
-            background-color: var(--primary-color);
-            color: white;
-            border: 1px solid var(--primary-color);
-            padding: 0 20px;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            font-weight: bold;
-            height: 40px;
-            transition: 0.2s;
-        }
-        .btn-add:hover { background-color: #1b5e20; }
-
-        /* ส่วนค้นหา */
-        #searchBar { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid #ddd; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
-            margin-bottom: 15px; 
-        }
-
-        /* ตารางข้อมูล */
-        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { background-color: var(--primary-color); color: white; padding: 12px; text-align: left; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background-color: #f9f9f9; }
-        
-        .btn-delete { 
-            color: var(--danger-color); 
-            border: 1px solid var(--danger-color); 
-            background: white;
-            padding: 3px 8px; 
-            border-radius: 4px; 
-            cursor: pointer;
-        }
-        .btn-delete:hover { background: var(--danger-color); color: white; }
-        .no-result { display: none; text-align: center; padding: 30px; color: #999; }
-    </style>
+    <title>ระบบจัดการข้อมูลหน่วยงาน</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h2>📋 ระบบจัดการข้อมูลหน่วยงาน</h2>
-        <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">By Pongston Korat</p>
-    </header>
+<h2>ระบบจัดการข้อมูลหน่วยงาน</h2>
+<p>By Pongston Korat</p>
 
-    <div class="input-section">
-        <div class="form-group">
-            <label>Customer Code</label>
-            <input type="text" id="custCode" class="cust-input" placeholder="21643">
-        </div>
-        <div class="form-group">
-            <label>Site Code</label>
-            <input type="text" id="siteCode" class="site-input" placeholder="น103">
-        </div>
-        <div class="form-group" style="flex-grow: 1;">
-            <label>หน่วยงาน (Agency)</label>
-            <input type="text" id="agencyName" class="agency-input" placeholder="ระบุชื่อหน่วยงานหรือโครงการ">
-        </div>
-        <button class="btn-add" onclick="addData()">เพิ่มข้อมูล</button>
-    </div>
-
-    <input type="text" id="searchBar" onkeyup="filterData()" placeholder="🔍 ค้นหาข้อมูลในตาราง...">
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Customer</th>
-                    <th>Site</th>
-                    <th>หน่วยงาน (Agency)</th>
-                    <th style="width: 60px; text-align: center;">ลบ</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-    <div id="noResult" class="no-result">ไม่พบข้อมูลที่ค้นหา</div>
+<div class="box">
+    <input type="text" id="search" placeholder="ค้นหา Customer / Site / หน่วยงาน">
+    <button onclick="searchData()">ค้นหา</button>
 </div>
 
-<script>
-    const initialData = [
-        { cust: "21643", site: "น103", agency: "รุ่งนิรันดร์ อาคารวิชาการ" },
-        { cust: "21643", site: "D897", agency: "รุ่งนิรันดร์ ช.มนตรี Prive" },
-        { cust: "21643", site: "-", agency: "รุ่งนิรันดร์ ปรุใหญ่" },
-        { cust: "13183", site: "D041", agency: "โฟร์ซัมมิท ช.เสถียร Neo Home" },
-        { cust: "21643", site: "น101", agency: "รุ่งนิรันดร์ คลองดาด กม.4" },
-        { cust: "21643", site: "น102", agency: "รุ่งนิรันดร์ คลองคาด กม.5" },
-        { cust: "21643", site: "น100", agency: "รุ่งนิรันดร์ คลองดาด กม.3" },
-        { cust: "21643", site: "น098", agency: "รุ่งนิรันดร์ คลองดาด กม.7" },
-        { cust: "21643", site: "น055", agency: "รุ่งนิรันดร์ บ้านเดี่ยวจอหอทองพูน" },
-        { cust: "21643", site: "น068", agency: "รุ่งนิรันดร์ TB68" },
-        { cust: "22253", site: "D009", agency: "เมืองทองธนทรัพย์ Spec จีน" },
-        { cust: "22253", site: "D013", agency: "เมืองทองธนทรัพย์ SpecThai" },
-        { cust: "21643", site: "D896", agency: "รุ่งนิรันดร์ ชน.อาณาสรา" },
-        { cust: "21643", site: "D020", agency: "รุ่งนิรันดร์ ช.ทองพูลลิลดา" },
-        { cust: "21643", site: "น096", agency: "รุ่งนิรันดร์ อู่อาคม" },
-        { cust: "21643", site: "น103", agency: "รุ่งนิรันดร์ โครงการโรงประคลอง 116432" },
-        { cust: "21643", site: "น028", agency: "รุ่งนิรันดร์ the best 4" }
-    ];
+<div class="box">
+    <input type="text" id="customer" placeholder="Customer Code">
+    <input type="text" id="site" placeholder="Site Code">
+    <input type="text" id="agency" placeholder="หน่วยงาน (Agency)">
+    <button onclick="addData()">เพิ่มข้อมูล</button>
+</div>
 
-    let dataList = JSON.parse(localStorage.getItem('agencyData_vFinal')) || initialData;
+<table>
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Site</th>
+            <th>หน่วยงาน</th>
+            <th>ลบ</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
 
-    function renderTable() {
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
-        dataList.forEach((item, index) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${item.cust}</td>
-                <td>${item.site}</td>
-                <td>${item.agency}</td>
-                <td style="text-align: center;"><button class="btn-delete" onclick="deleteData(${index})">ลบ</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-        localStorage.setItem('agencyData_vFinal', JSON.stringify(dataList));
-        filterData();
-    }
+<p id="notfound" class="hide">ไม่พบข้อมูลที่ค้นหา</p>
 
-    function addData() {
-        const cust = document.getElementById("custCode");
-        const site = document.getElementById("siteCode");
-        const agency = document.getElementById("agencyName");
-
-        if (!cust.value || !agency.value) {
-            alert("กรุณากรอกข้อมูลสำคัญให้ครบ");
-            return;
-        }
-
-        dataList.unshift({ cust: cust.value.trim(), site: site.value.trim() || "-", agency: agency.value.trim() });
-        cust.value = ""; site.value = ""; agency.value = "";
-        renderTable();
-    }
-
-    function deleteData(index) {
-        if (confirm("ลบข้อมูลแถวนี้?")) {
-            dataList.splice(index, 1);
-            renderTable();
-        }
-    }
-
-    function filterData() {
-        const filter = document.getElementById("searchBar").value.toLowerCase();
-        const rows = document.getElementById("tableBody").getElementsByTagName("tr");
-        let hasData = false;
-        for (let row of rows) {
-            row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
-            if (row.style.display === "") hasData = true;
-        }
-        document.getElementById("noResult").style.display = hasData ? "none" : "block";
-    }
-
-    renderTable();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
